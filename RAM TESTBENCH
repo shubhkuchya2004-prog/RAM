@@ -1,0 +1,42 @@
+`timescale 1ns/1ps
+
+module tb_sync_ram;
+
+    reg clk;
+    reg we;
+    reg [3:0] addr;
+    reg [7:0] data_in;
+    wire [7:0] data_out;
+
+    sync_ram uut (
+        .clk(clk),
+        .we(we),
+        .addr(addr),
+        .data_in(data_in),
+        .data_out(data_out)
+    );
+
+    // Clock generator
+    always #5 clk = ~clk;
+
+    initial begin
+        clk = 0;
+
+        // Write 55 to address 3
+        we = 1; addr = 4'd3; data_in = 8'h55; #10;
+
+        // Write AA to address 7
+        we = 1; addr = 4'd7; data_in = 8'hAA; #10;
+
+        // READ address 3
+        we = 0; addr = 4'd3; #10;
+        $display("Read addr 3: %h", data_out);
+
+        // READ address 7
+        we = 0; addr = 4'd7; #10;
+        $display("Read addr 7: %h", data_out);
+
+        $finish;
+    end
+
+endmodule
